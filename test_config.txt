@@ -1,0 +1,2 @@
+classes=cat,dog
+checkpoint=C:\Users\User\Desktop\code\NNforgit\coatnet_catdog_full.pt
