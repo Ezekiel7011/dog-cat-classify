@@ -83,8 +83,8 @@ def load_dataset(batch_size, train_data_path, val_data_path, image_size):
     transform = transforms.Compose(
         [
             transforms.Resize(image_size),
-            transforms.RandomHorizontalFlip(),  # 随机水平翻转
-            transforms.RandomCrop(image_size, padding=10),  # 随机裁剪
+            transforms.RandomHorizontalFlip(),  # 隨機水平翻轉
+            transforms.RandomCrop(image_size, padding=10),  # 隨機裁切
             transforms.ToTensor(),
         ]
     )
@@ -187,26 +187,6 @@ def train(
     logging.info("Training completed.")
     return record_train, record_test
 
-
-# def test(net, test_iter, criterion, device):
-#     total, correct = 0, 0
-#     net.eval()
-
-#     with torch.no_grad():
-#         logging.info("Testing...")
-#         for X, y in tqdm(test_iter):
-#             X, y = X.to(device), y.to(device)
-#             output = net(X)
-#             _, preds = torch.max(output, 1)
-#             total += y.size(0)
-#             correct += (preds == y).sum().item()
-
-#     test_acc = correct / total * 100
-#     logging.info("Test Accuracy: %.2f%%", test_acc)
-#     net.train()
-#     return test_acc
-
-
 def test(net, test_iter, criterion, device):
     total, correct = 0, 0
     net.eval()
@@ -230,7 +210,7 @@ def test(net, test_iter, criterion, device):
     logging.info("Test Accuracy: %.2f%%", test_acc)
     net.train()
 
-    # 打印混淆矩阵
+    # 顯示混淆矩陣
     confusion_mat = confusion_matrix(y_true, y_pred)
     print("Confusion Matrix:")
     print(confusion_mat)
