@@ -54,19 +54,19 @@ def predict(image_path):
 def choose_image():
     file_path = filedialog.askopenfilename()
     if file_path:
-        # 预测标签
+        # 預測標籤
         predicted_label = predict(file_path)
         result_label.config(text=f"Predicted Label: {predicted_label}")
 
-        # 加载图片并缩放
+        # 加載圖片並縮放
         image = Image.open(file_path)
         width, height = image.size
         aspect_ratio = width / height
-        new_width = 300  # 目标宽度
-        new_height = int(new_width / aspect_ratio)  # 等比例缩放计算高度
+        new_width = 300  # 目標寬度
+        new_height = int(new_width / aspect_ratio)  # 等比例縮放計算高度
         image = image.resize((new_width, new_height), Image.ANTIALIAS)
 
-        # 显示缩放后的图片
+        # 顯示縮放後的圖片
         photo = ImageTk.PhotoImage(image)
         image_label.config(image=photo)
         image_label.image = photo
@@ -74,7 +74,7 @@ def choose_image():
 
 # 建立主視窗
 root = tk.Tk()
-root.title("服飾辨識應用程式")
+root.title("辨識應用程式")
 
 # 添加選擇圖片按鈕
 choose_button = tk.Button(root, text="選擇圖片", command=choose_image)
