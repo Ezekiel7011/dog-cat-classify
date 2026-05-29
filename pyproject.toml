@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "industrial-aoi-vision-pipeline"
+version = "0.1.0"
+description = "Production-oriented AOI vision inspection pipeline"
+requires-python = ">=3.9"
+dependencies = [
+  "torch>=1.13",
+  "torchvision>=0.14",
+  "numpy>=1.23",
+  "Pillow>=9.5",
+  "tqdm>=4.65",
+  "PyYAML>=6.0",
+  "matplotlib>=3.7",
+  "onnx>=1.14",
+  "einops>=0.6",
+]
+
+[project.scripts]
+aoi-train = "aoi_inspection.train:main"
+aoi-evaluate = "aoi_inspection.evaluate:main"
+aoi-infer = "aoi_inspection.infer:main"
+aoi-export-onnx = "aoi_inspection.export_onnx:main"
+aoi-benchmark = "aoi_inspection.benchmark:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

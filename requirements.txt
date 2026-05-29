@@ -1,4 +1,9 @@
-torch>=1.7.1
-torchvision>=0.8.2
-sklearn
-numpy
+torch>=1.13
+torchvision>=0.14
+numpy>=1.23
+Pillow>=9.5
+tqdm>=4.65
+PyYAML>=6.0
+matplotlib>=3.7
+onnx>=1.14
+einops>=0.6

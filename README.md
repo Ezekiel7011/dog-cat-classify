@@ -1,51 +1,132 @@
-# CoAtNet Cat and Dog Classification
+# Industrial AOI Vision Inspection Pipeline
 
-這是一個使用 CoAtNet 對貓和狗進行分類的深度學習專案。本專案包含了一個預訓練的模型`coatnet_catdog_full.pt`，可供立即使用。
+Reference implementation for a production-oriented automated optical inspection
+(AOI) workflow. The project uses a small public image-classification sample so the
+repository can run end to end, while the structure mirrors the workflow used in
+industrial vision systems: configurable training, metric-driven evaluation,
+batch inference, ONNX export, and latency benchmarking.
 
-## 模型性能
+This repository is intentionally positioned as a vision-system engineering
+project, not just a model-training demo.
 
-模型在測試集上的表現如下：
+## Engineering Goals
 
-- Precision (準確率): 0.86
-- Recall (召回率): 0.85
-- F1-Score: 0.85
-- Accuracy (準確度): 0.85
+- Build a reproducible inspection pipeline from dataset loading to deployment
+  artifact export.
+- Track metrics that matter in AOI: precision, recall, false call rate, miss
+  rate, confusion matrix, latency, throughput, and model size.
+- Keep the runtime configurable for different production lines, camera
+  resolutions, classes, and hardware targets.
+- Provide clean command-line entry points for training, validation, batch
+  inference, ONNX export, and performance benchmarking.
 
-混淆矩陣如下：
+## Architecture
 
-|            | 預測為 Cat | 預測為 Dog |
-| ---------- | ---------- | ---------- |
-| 實際為 Cat | 287        | 46         |
-| 實際為 Dog | 51         | 282        |
-
-## 安裝
-
-首先，請確保安裝了 Python 3.6+。然後，安裝所需的依賴項目：
-
-```
-pip install -r requirements.txt
-```
-
-## 使用方法
-
-為了使用預訓練的模型進行預測，請運行：
-
-```
-python test.py --config test_config.txt
-```
-
-## 訓練您自己的模型
-
-如果您希望訓練自己的模型，請使用以下命令：
-
-```
-python train.py --config config.txt
+```text
+configs/                  Runtime configuration
+docs/                     System design, model card, benchmark template
+src/aoi_inspection/       Production-style Python package
+  config.py               Typed config loading and validation
+  datasets.py             ImageFolder data pipeline
+  metrics.py              AOI-oriented classification metrics
+  train.py                Training loop with checkpointing
+  evaluate.py             Validation and report generation
+  infer.py                Single-image and folder inference
+  export_onnx.py          Deployment artifact export
+  benchmark.py            Latency and throughput benchmark
+  models/coatnet.py       CoAtNet model factory wrapper
+scripts/                  Windows PowerShell examples
+tests/                    Lightweight tests for config and metrics
 ```
 
-## 參考
+## Quick Start
 
-本專案的 CoAtNet 實現參考自[這裡](https://github.com/chinhsuanwu/coatnet-pytorch)。感謝原作者的貢獻。
+Install dependencies:
 
-## 資料
+```powershell
+python -m pip install -r requirements.txt
+```
 
-專案中包含`train`和`val`兩個資料夾，內含少量資料供展示和測試使用。
+Train a model:
+
+```powershell
+python -m aoi_inspection.train --config configs/train.yaml
+```
+
+Evaluate a checkpoint:
+
+```powershell
+python -m aoi_inspection.evaluate --config configs/train.yaml --checkpoint artifacts/checkpoints/best.pt
+```
+
+Run batch inference:
+
+```powershell
+python -m aoi_inspection.infer --config configs/infer.yaml --input val --checkpoint artifacts/checkpoints/best.pt
+```
+
+Export ONNX:
+
+```powershell
+python -m aoi_inspection.export_onnx --config configs/infer.yaml --checkpoint artifacts/checkpoints/best.pt
+```
+
+Benchmark inference:
+
+```powershell
+python -m aoi_inspection.benchmark --config configs/infer.yaml --checkpoint artifacts/checkpoints/best.pt
+```
+
+For local development without package installation, set:
+
+```powershell
+$env:PYTHONPATH = "src"
+```
+
+## AOI Metrics
+
+The evaluation report includes:
+
+- accuracy
+- macro precision / recall / F1
+- per-class precision / recall / F1
+- false call rate by class
+- miss rate by class
+- confusion matrix
+
+In semiconductor AOI, accuracy alone can hide production risk. False calls
+increase review cost and reduce line efficiency; misses create quality escapes.
+This project therefore reports both rates explicitly.
+
+## Dataset Note
+
+The included `train/` and `val/` folders are tiny public sample images for
+workflow validation only. For a real AOI project, replace them with an
+ImageFolder-style dataset:
+
+```text
+dataset/
+  train/
+    pass/
+    defect/
+  val/
+    pass/
+    defect/
+```
+
+Large production images, customer data, checkpoints, and generated reports
+should stay outside Git. Use `artifacts/` for local outputs.
+
+## Production Hardening Roadmap
+
+- Add 8K image tiling and region-level defect aggregation.
+- Add ONNX Runtime parity tests against PyTorch output.
+- Add threshold calibration using false call and miss-rate targets.
+- Add production-line data drift summaries.
+- Add CI checks for linting, unit tests, and smoke inference.
+
+## Documents
+
+- [System Design](docs/system_design.md)
+- [Model Card](docs/model_card.md)
+- [Benchmark Report Template](docs/benchmark_report.md)
